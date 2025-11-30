@@ -1,4 +1,4 @@
-import torch.cuda
+import torch
 from PIL import Image
 from preprocessing import train,save
 import os
