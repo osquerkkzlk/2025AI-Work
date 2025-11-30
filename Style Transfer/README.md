@@ -5,6 +5,10 @@
 还有损失曲线图和过渡图片。同时，我们使用Gradio生成简单的
 前端界面，并以本地为后端，实现了网页上传图片即可进行风格迁移。
 
+## V2
+我们将模型部署到huggingface上，[链接](https://huggingface.co/spaces/linyuZheng/Style_Transfering)，
+很是很遗憾的是，国内连接不稳定，所以我们推荐您使用VPN，并可以在电脑端、手机端尝试在线风格迁移。
+
 # 你需要知道的
 
 1.当你运行 main.py文件时，需要上Image文件夹中的图片名称
@@ -13,3 +17,4 @@ e.g.content_haha.png 或者 style784.jpg )
 
 2.你可以选择直接运行Web.py，并在浏览器打开连接即可在线上传和训练(前提是必须在本地运行，依托本地python环境)。
 
+3.你可以在huggingface上在线训练，不需要本地环境。
