@@ -1,73 +1,92 @@
 import gradio as gr
-from PIL import Image
 import torch
-from preprocessing import get, extract_features, gram, criterion
+from utils import load_image, Recorder, convert_image
+from train import get, get_features, criterion
+import tqdm
+
+SIMPLE_PROGRESS_HTML_START = """<div style="width: 100%; height: 20px; background-color: #f0f0f0; border-radius: 10px;">"""
+SIMPLE_PROGRESS_HTML_END = """</div>"""
 
 configue = {
-    "lr": 0.003,
-    "epochs": 500,
+    "epochs": 5000,
     "device": "cuda" if torch.cuda.is_available() else "cpu",
-    "image_shape": (420, 400),
-    "epoch_step": 999999,
-    "steps": 400,
+    "steps": 3000,
+    "epoch_step": 1000  # 这个参数在实时更新中不再重要
 }
+example_data = [
+        ["Image/content1.jpg", "Image/style1.jpg"],
+        ["Image/content2.jpg", "Image/style2.jpg"],
+    ]
 
 
-def style_transfer_with_progress(content_img: Image.Image, style_img: Image.Image):
-    content_X, style_X, layers, net = get(content_img, style_img, configue["device"], configue["image_shape"])
 
-    with torch.no_grad():
-        _, content_features = extract_features(net, content_X, layers)
-        style_features, _ = extract_features(net, style_X, layers)
-        style_gram = [gram(x) for x in style_features]
 
-    X = content_X.clone().detach().requires_grad_(True)
-    optim = torch.optim.AdamW([X], lr=configue["lr"])
-    scheduler = torch.optim.lr_scheduler.StepLR(optim, gamma=0.8, step_size=configue["steps"])
+def transfer(content_path, style_path):
+    device = configue["device"]
+    epochs=configue["epochs"]
 
-    total_steps = configue["epochs"]
 
-    # 实时生成器
-    for step in range(total_steps):
+    content_image = load_image(content_path).to(device)
+    style_image = load_image(style_path).to(device)
+    content_X, style_grams, target, net = get(content_image, style_image, device)
+
+    optim = torch.optim.AdamW([target], lr=0.003)
+    loss_recorder = Recorder(4)
+
+    pbar = tqdm.tqdm(total=epochs, desc="Training...")
+
+    for epoch in range(epochs):
+        target_features = get_features(target, net)
         optim.zero_grad()
-        style_pred, content_pred = extract_features(net, X, layers)
-        contents_l, style_l, tv_l, sum_l = criterion(X, content_features, content_pred, style_gram, style_pred)
-        sum_l.backward()
+        c_loss, s_loss, t_loss, total = criterion(target, content_X["conv4_1"], target_features["conv4_1"], \
+                                                  style_grams, target_features)
+        total.backward()
         optim.step()
-        scheduler.step()
 
-        # 每 30 步更新进度条
-        if step % 30 == 0 or step == total_steps - 1:
-            current = X.clone().squeeze(0).cpu()
-            current = torch.clamp(current, 0, 1)
-            result_np = current.permute(1, 2, 0).detach().numpy()
-            result_pil = Image.fromarray((result_np * 255).astype('uint8'), mode='RGB')
+        loss_recorder.add(c_loss.item(), s_loss.item(), t_loss.item(), total.item())
+        pbar.update(1)
+        pbar.set_postfix(loss=f"{loss_recorder[3][-1]:.4f}")
+
+        percent = (epoch + 1) / epochs
+        progress_width = int(percent * 100)
+
+        html_content = f"""
+        {SIMPLE_PROGRESS_HTML_START}
+            <div style="width: {progress_width}%; height: 100%; background-color: #4CAF50; border-radius: 10px; text-align: right; color: white;">
+                {progress_width}%
+            </div>
+        {SIMPLE_PROGRESS_HTML_END}
+        <p style="text-align:center; color: #555; margin-top:5px;">Epoch {epoch + 1}/{epochs} | Loss: {loss_recorder[3][-1]:.4f}</p>
+        """
+
+        current_img = convert_image(target)
+        yield html_content, current_img
 
 
-            progress_text = f"风格融合中... {step + 1}/{total_steps} 步"
-            if step % 200 == 0 and step > 0:
-                progress_text += " · 已更新中间结果！"
+# --- Gradio 界面保持不变 ---
+with gr.Blocks(title="你想要的风格") as demo:
+    gr.Markdown(" # 点一下瞧瞧😝")
 
-            yield result_pil, progress_text
-    print("transformed...")
-
-# ============== 用 Blocks 实现实时输出 ==============
-with gr.Blocks(title="AI风格迁移 · 实时进度") as demo:
-    gr.Markdown("# AI艺术风格迁移神器\n拖两张图，看魔法实时发生！")
+    # 进度条组件
+    progress_display = gr.HTML(label="生成进度")
 
     with gr.Row():
-        content_input = gr.Image(label="内容图", type="pil")
-        style_input = gr.Image(label="风格图", type="pil")
+        content_input = gr.Image(label="内容图", type="filepath", height=256, width=256)
+        style_input = gr.Image(label="风格图", type="filepath", height=256, width=256)
 
     submit_btn = gr.Button("开始生成艺术作品", variant="primary")
-    output_image = gr.Image(label="实时结果（每50步更新一次）", type="pil", height=420, width=400)
-    status_text = gr.Textbox(label="进度", interactive=False)
+    output_image = gr.Image(label="实时结果", type="pil", height=256, width=256)
 
-    submit_btn.click(
-        fn=style_transfer_with_progress,
+    gr.Examples(
+        examples=example_data,
         inputs=[content_input, style_input],
-        outputs=[output_image, status_text]
+        label="选择一个示例来快速体验"
     )
 
-demo.queue()
-demo.launch(server_name="0.0.0.0", share=True)
+    submit_btn.click(
+        fn=transfer,
+        inputs=[content_input, style_input],
+        outputs=[progress_display, output_image]
+    )
+
+demo.launch()
