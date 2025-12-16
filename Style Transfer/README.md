@@ -11,7 +11,7 @@
 
 
 ## V3
-我们引入进度条模块，同时我们重构了项目代码使逻辑更清晰。这是新的[huggignface链接](https://huggingface.co/spaces/linyuZheng/Style_Transfering
+我们引入进度条模块，同时我们重构了项目代码使逻辑更清晰。这是新的[huggignface链接](https://huggingface.co/spaces/linyuZheng/Style_Transfering)
 
 
 ## 你需要知道的
