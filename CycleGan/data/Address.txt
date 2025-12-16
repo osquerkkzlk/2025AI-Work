@@ -1,0 +1,15 @@
+由于数据体积较大，无法上传，因此我们在这里提供下载链接
+
+===========================================
+Ghibli
+https://www.kaggle.com/datasets/shubham1921/real-to-ghibli-image-dataset-5k-paired-images
+
+Shinkai
+https://www.kaggle.com/datasets/kevinputrasantoso/shinkai-set
+
+Monet
+https://www.kaggle.com/competitions/gan-getting-started/data
+
+解压缩后层级为
+/
+===========================================
