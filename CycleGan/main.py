@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     # 数据整理
     Style_path, photo_path ,desc= choose_task()
-    image_iter = DataLoader(ImageDataset(Style_path,photo_path), batch_size=1,
+    image_iter = DataLoader(ImageDataset(Style_path,photo_path), batch_size=configue["batch_size"],
                             shuffle=True, pin_memory=True)
 
     # 模型构建与训练入口
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         net.train(image_iter)
         # transformed_imgs, true_imgs=Transformer_image(net, image_iter, configue)
         # show_img(transformed_imgs, true_imgs)
-        show_chart(net)
+        show_chart(net,desc)
     if configue["save"]:
         save(net,desc)
 

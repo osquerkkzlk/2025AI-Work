@@ -8,17 +8,18 @@ import random
 configue = {
     "batch_size": 1,
     "seed": 42,
-    "epochs": 100,   # 根据数据量酌情更改 ，供参考-->   epochs==100,len(Style)==300
+    "epochs": 100,   # 根据数据量酌情更改 ，供参考-->   Monet epochs==100,len(src)==300
+                                                # Shinkai & Ghibli epochs=30,len(src)=2500
     "device": "cuda" if torch.cuda.is_available() else "cpu",
     "start_lr": 2e-4,
     "temp": 10,
     "idt_coef": 0.5,
     "decay_epoch": 60,
 
-    "save":False ,            # 是否保存生成器权重，默认不保存，使用已经训练好的权重
+    "save":True ,            # 是否保存生成器权重，默认不保存，使用已经训练好的权重
     "training": True,         # 控制是否训练
-    "show_per_epochs":10,      # 每过几个epoch就显示一次，同参数 "show_in_training"相配合
-    "show_in_training":True  # 控制训练过程中是否显示 Style转换图,但是pycahrm容易堵塞进程，即必须主动关闭图像窗口才能继续训练
+    "show_per_epochs":5,      # 每过几个epoch就显示一次，同参数 "show_in_training"相配合
+    "show_in_training":True  # 控制训练过程中是否显示 Src转换图,但是pycahrm容易堵塞进程，即必须主动关闭图像窗口才能继续训练
 }
 
 # 设置种子
@@ -50,27 +51,27 @@ def show_img(transformed_imgs, true_imgs):
     plt.subplot(122)
     plt.imshow(transformed_imgs[-1])
     plt.axis("off")
-    plt.title("Generated (Style-esque)")
+    plt.title("Generated (Src-esque)")
 
     plt.show()
     plt.close()
 
-def show_chart(net):
+def show_chart(net,desc):
     series=np.arange(len(net.record_metric[0]))
     plt.plot(series,net.record_metric[0],"r-",label="G_loss")
     plt.plot(series,net.record_metric[1],"b-",label="D_loss")
     plt.legend()
     plt.xlabel("epochs")
     plt.ylabel("loss")
-    plt.title("loss curve")
-    plt.savefig("./Storage/loss curve")
+    plt.title(f"{desc}_loss_curve")
+    plt.savefig(f"./Storage/{desc}_loss_curve")
     plt.show()
 
 @torch.no_grad
 def Transformer_image(net, data_iter, configue=configue, num=1):
-    net.G_Style2Photo.eval()
-    net.G_Photo2Style.eval()
-    net.D_Style.eval()
+    net.G_src2Photo.eval()
+    net.G_Photo2src.eval()
+    net.D_src.eval()
     net.D_Photo.eval()
     true_imgs, transformed_imgs = [], []
     for i, img in enumerate(data_iter):
@@ -78,7 +79,7 @@ def Transformer_image(net, data_iter, configue=configue, num=1):
             break
         device = configue["device"]
         img = img.to(device)
-        transformed_img = net.G_Photo2Style(img)
+        transformed_img = net.G_Photo2src(img)
         transformed_img = reverse_img(transformed_img.cpu()[0])
         transformed_img = transforms.ToPILImage()(transformed_img).convert("RGB")
         transformed_imgs.append(transformed_img)
@@ -91,14 +92,14 @@ def Transformer_image(net, data_iter, configue=configue, num=1):
     return transformed_imgs, true_imgs
 
 def load(net,desc):
-    net.G_Style2Photo.load_state_dict(torch.load(f".\Storage\G_{desc}_Style2Photo.pth"))
-    net.G_Photo2Style.load_state_dict(torch.load(f".\Storage\G_{desc}_Photo2Style.pth"))
+    net.G_src2Photo.load_state_dict(torch.load(f"./Storage/G_{desc}_Src2Photo.pth"))
+    net.G_Photo2src.load_state_dict(torch.load(f"./Storage/G_{desc}_Photo2Src.pth"))
 
-    return net.G_Style2Photo,net.G_Photo2Style
+    return net.G_src2Photo,net.G_Photo2src
 
-def save(net,desc):
-    torch.save(net.G_Style2Photo.state_dict(),f".\Storage\G_{desc}_Style2Photo.pth")
-    torch.save(net.G_Photo2Style.state_dict(), f".\Storage\G_{desc}_Photo2Style.pth")
+def save(G_Src2Photo,G_Photo2Src,desc):
+    torch.save(G_Src2Photo.state_dict(),f"./Storage/G_{desc}_Src2Photo.pth")
+    torch.save(G_Photo2Src.state_dict(), f"./Storage/G_{desc}_Photo2Src.pth")
 
 class sample_fake(object):
     def __init__(self, max_imgs=50):
@@ -159,5 +160,4 @@ def show_configue():
     for key,value in configue.items():
         print(f"{key:20} {value}")
     print("\n\n")
-
 

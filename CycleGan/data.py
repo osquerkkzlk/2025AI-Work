@@ -14,10 +14,10 @@ def extract(dir_path,extract_path):
     print("解压缩完成")
 
 class ImageDataset(Dataset):
-    def __init__(self,Style_path,photo_path,size=(256,256)):
+    def __init__(self,src_path,photo_path,size=(256,256)):
         super().__init__()
-        self.Style_path=glob.glob(Style_path+"\*")
-        self.photo_path=glob.glob(photo_path+"\*")
+        self.src_path=glob.glob(src_path+"/*")
+        self.photo_path=glob.glob(photo_path+"/*")
         self.transforms=transforms.Compose([
             transforms.ToTensor(),
             transforms.Resize(286),
@@ -25,13 +25,14 @@ class ImageDataset(Dataset):
             transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])
         ])
     def __len__(self):
-        return min(len(self.Style_path),len(self.photo_path))
+        return min(len(self.src_path),len(self.photo_path))
 
     def __getitem__(self,idx):
-        photo_idx=random.randint(0,len(self.photo_path))
-        Style_img=self.transforms(Image.open(self.Style_path[idx]).convert("RGB"))
+        photo_idx=random.randint(0,len(self.photo_path)-1)
+        src_img=self.transforms(Image.open(self.src_path[idx]).convert("RGB"))
         photo_img=self.transforms(Image.open(self.photo_path[photo_idx]).convert("RGB"))
-        return Style_img,photo_img
+        return src_img,photo_img
+
 
 def choose_task():
     dt={1:"Monet",2:"Ghibli",3:"Shinkai"}

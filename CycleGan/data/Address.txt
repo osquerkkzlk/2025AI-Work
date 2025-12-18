@@ -10,6 +10,16 @@ https://www.kaggle.com/datasets/kevinputrasantoso/shinkai-set
 Monet
 https://www.kaggle.com/competitions/gan-getting-started/data
 
-解压缩后层级为
-/
+最好直接运行main程序解压缩，解压缩后层级为
+data
+├── Monet
+│   ├── photo
+│   └── monet
+├── Shinkai
+│   ├── photo
+│   └── shinkai
+└── Ghibli
+    ├── photo
+    └── ghibli
+
 ===========================================
