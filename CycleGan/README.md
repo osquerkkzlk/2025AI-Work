@@ -52,5 +52,5 @@ CycleGan/
 
 | 原始图片 (Original)                     | 转换后图片 (CycleGAN Generated)            |
 |-------------------------------------|---------------------------------------|
-| ![original](.\Image\Original_1.png) | ![generated](.\Image\Generated_1.png) || <img src="results/fake_B/001.jpg" width="400"/> |
-| ![original](.\Image\Original_2.png) | ![generated](.\Image\Generated_2.png) || <img src="results/fake_B/001.jpg" width="400"/> |
+| ![original](./Image/Original_1.png) | ![generated](./Image/Generated_1.png) || <img src="results/fake_B/001.jpg" width="400"/> |
+| ![original](./Image/Original_2.png) | ![generated](./Image/Generated_2.png) || <img src="results/fake_B/001.jpg" width="400"/> |
