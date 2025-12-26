@@ -1,18 +1,31 @@
-# 项目经历
-## V1
+<img width="1899" height="672" alt="image" src="https://github.com/user-attachments/assets/c8c4441f-52b7-4253-addc-295f0dfe1b65" />## 项目经历
+### V1
 本项目实现风格迁移，并提取Image文件夹的图片特征
 ，最终将生成的图片保存在Storage文件夹，随之一同保存的
 还有损失曲线图和过渡图片。同时，我们使用Gradio生成简单的
 前端界面，并以本地为后端，实现了网页上传图片即可进行风格迁移。
 
-## V2
+### V2
 我们将模型部署到huggingface上（[链接已失效]()），
 推荐您使用VPN，并可以在电脑端、手机端尝试在线风格迁移，由于只能使用免费的cpu，所以生成速度比较慢。
 
 
-## V3
+### V3
 我们引入进度条模块，同时我们重构了项目代码使逻辑更清晰。这是新的[huggignface链接](https://huggingface.co/spaces/linyuZheng/Style_Transfering)
 
+## 项目框架
+```markdown
+CycleGan/
+├── app.py           # Gradio 前端运行文件
+├── main.py          # 程序主文件，可直接运行           
+├── train.py         # 网络架构搭建函数文件，辅助文件
+├── utils.py         # 辅助工具函数文件
+├── requirements.txt         #  环境依赖文件
+│
+│
+├── Image              # 示例图片存放文件夹
+└── Storage              # 训练过程保存的中间图像文件夹
+```
 
 ## 你需要知道的
 
@@ -26,7 +39,6 @@ e.g.content_haha.png 或者 style784.jpg )
 
 ## 效果展示😝
 
-|       原始内容图 (Content)        |       原始风格图 (Style)        |         最终结果图 (Result)          |
-|:----------------------------:|:--------------------------:|:-------------------------------:|
-| ![内容图](./Image/content2.jpg) | ![风格图](./Image/style1.jpg) | ![结果图](./Storage/5000_5000.png) |
+<img width="1899" height="672" alt="image" src="https://github.com/user-attachments/assets/9c2152f2-7cae-47cf-96f0-4e95ca249c04" />
+
 
