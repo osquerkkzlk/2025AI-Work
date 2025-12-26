@@ -3,7 +3,7 @@
 
 ## 项目框架
 ```markdown
-CycleGan/
+Store_sales_Project/
 ├── Storage/
 │    ├──LSTM_loss_curve.png
 │    ├──Transformer_loss_curve.png
