@@ -1,4 +1,3 @@
-<img width="1899" height="672" alt="image" src="https://github.com/user-attachments/assets/c8c4441f-52b7-4253-addc-295f0dfe1b65" />## 项目经历
 ### V1
 本项目实现风格迁移，并提取Image文件夹的图片特征
 ，最终将生成的图片保存在Storage文件夹，随之一同保存的
