@@ -1,10 +1,9 @@
-<img width="758" height="573" alt="image" src="https://github.com/user-attachments/assets/b134c8d4-8de2-4a33-b408-63e402a3e7ac" />## 概述
 本项目以kaggle时序比赛[store-sales-time-series-forecasting竞赛](https://www.kaggle.com/competitions/store-sales-time-series-forecasting)为背景，采用了LSTM和Transformer两种方法去预测未来16天的序列。我们没有进行复杂的特征工程，只是进行了简单的插值和处理，并取得了 0.47513(LSTM) 和 0.46949（Transformer）。
 
 
 ## 项目框架
 ```markdown
-CycleGan/
+Store_sales_Project/
 ├── Storage/
 │    ├──LSTM_loss_curve.png
 │    ├──Transformer_loss_curve.png
