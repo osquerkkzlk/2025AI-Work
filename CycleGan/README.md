@@ -54,3 +54,7 @@ CycleGan/
 |-------------------------------------|---------------------------------------|
 | ![original](./Image/Original_1.png) | ![generated](./Image/Generated_1.png) || <img src="results/fake_B/001.jpg" width="400"/> |
 | ![original](./Image/Original_2.png) | ![generated](./Image/Generated_2.png) || <img src="results/fake_B/001.jpg" width="400"/> |
+
+
+## 待优化
+1. 受限于数据量和gpu资源，模型损失尚未完全收敛，所以最终呈现的效果还有不足
